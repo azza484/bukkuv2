@@ -1,5 +1,6 @@
 # Release flow:
-# 1. Update versions in packages/mcp/package.json and packages/cli/package.json
+# 1. Update the version in packages/mcp/package.json and/or packages/cli/package.json
+#    (a package whose version is already on npm is skipped)
 # 2. git commit + git tag
 # 3. git push && git push --tags
 # 4. Create GitHub release from the tag
@@ -20,14 +21,14 @@ jobs:
       id-token: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: 22
-          cache: 'npm'
-          registry-url: 'https://registry.npmjs.org'
+          node-version-file: .nvmrc
+          cache: "npm"
+          registry-url: "https://registry.npmjs.org"
 
       - name: Upgrade npm
         run: npm install -g npm@latest
@@ -35,14 +36,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
-        run: npm run build
+      # The same checks as CI (format, lint, build, typecheck, tests, parity), so nothing
+      # unverified reaches npm even if a release is cut from a commit CI never saw.
+      - name: Verify
+        run: npm run verify
 
-      - name: Test
-        run: npm test --workspaces --if-present
-
-      - name: Publish MCP to npm
-        run: npm publish --workspace packages/mcp --provenance
-
-      - name: Publish CLI to npm
-        run: npm publish --workspace packages/cli --provenance
+      # A release can bump only one package: a version already on npm is skipped, not an error.
+      - name: Publish to npm
+        run: |
+          for pkg in mcp cli; do
+            name=$(node -p "require('./packages/$pkg/package.json').name")
+            version=$(node -p "require('./packages/$pkg/package.json').version")
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "::notice::$name@$version is already on npm; skipping."
+            else
+              npm publish --workspace "packages/$pkg" --provenance
+            fi
+          done

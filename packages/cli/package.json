@@ -1,19 +1,28 @@
 {
   "name": "@centry-digital/bukku-cli",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Bukku accounting CLI - manage invoices, contacts, and accounting from the command line",
   "type": "module",
   "main": "build/index.js",
   "bin": {
     "bukku": "build/index.js"
   },
-  "files": ["build/", "LICENSE", "README.md"],
+  "files": [
+    "build/",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc --build",
     "test": "find src -name '*.test.ts' | xargs node --test --import tsx/esm"
   },
   "keywords": [
-    "bukku", "accounting", "cli", "invoicing", "bookkeeping", "malaysia"
+    "bukku",
+    "accounting",
+    "cli",
+    "invoicing",
+    "bookkeeping",
+    "malaysia"
   ],
   "homepage": "https://github.com/centry-digital/bukku",
   "bugs": {
