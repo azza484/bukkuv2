@@ -1,5 +1,4 @@
 import express from "express";
-import { spawn } from "node:child_process";
 
 const app = express();
 const PORT = process.env.PORT || 10000;
