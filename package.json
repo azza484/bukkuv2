@@ -17,6 +17,7 @@
     "verify": "npm run format:check && npm run lint && npm run build && npm run typecheck && npm test && npm run verify:parity",
     "clean": "tsc --build --clean",
     "prepare": "lefthook install || true"
+    "start:web": "node server.js"
   },
   "engines": {
     "node": ">=20.0.0"
@@ -34,3 +35,4 @@
     "typescript-eslint": "^8.72.0"
   }
 }
+"express": "^5.1.0"
